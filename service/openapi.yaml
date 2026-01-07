@@ -1,0 +1,272 @@
+openapi: "3.0.3"
+info:
+  title: PetStore API
+  version: "1.0.0"
+  description: |
+    PetStore API - Example service for Spec-Kit demonstration.
+    
+    This is the SINGLE SOURCE OF TRUTH for the API contract.
+    Consumers should use `spec generate sdk` to create clients.
+    
+    ## Usage for Consumers
+    
+    ```bash
+    # 1. Initialize your client project
+    spec init my-pet-client
+    
+    # 2. Copy this spec to your project
+    cp openapi.yaml my-pet-client/spec/
+    
+    # 3. Generate SDK
+    cd my-pet-client && spec generate sdk --language java
+    
+    # 4. Use the SDK in your code (no manual HTTP calls!)
+    ```
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local development server
+
+paths:
+  /pets:
+    get:
+      operationId: listPets
+      summary: List all pets
+      description: Returns a paginated list of all pets
+      tags:
+        - Pets
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of pets to return
+          schema:
+            type: integer
+            default: 10
+            maximum: 100
+        - name: offset
+          in: query
+          description: Number of pets to skip
+          schema:
+            type: integer
+            default: 0
+        - name: status
+          in: query
+          description: Filter by pet status
+          schema:
+            type: string
+            enum: [available, pending, sold]
+      responses:
+        '200':
+          description: List of pets
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Pet'
+                  total:
+                    type: integer
+                  limit:
+                    type: integer
+                  offset:
+                    type: integer
+    
+    post:
+      operationId: createPet
+      summary: Create a new pet
+      tags:
+        - Pets
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PetInput'
+      responses:
+        '201':
+          description: Pet created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /pets/{id}:
+    get:
+      operationId: getPet
+      summary: Get a pet by ID
+      tags:
+        - Pets
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Pet ID
+      responses:
+        '200':
+          description: Pet found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '404':
+          description: Pet not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    put:
+      operationId: updatePet
+      summary: Update a pet
+      tags:
+        - Pets
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PetInput'
+      responses:
+        '200':
+          description: Pet updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '404':
+          description: Pet not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    delete:
+      operationId: deletePet
+      summary: Delete a pet
+      tags:
+        - Pets
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Pet deleted
+        '404':
+          description: Pet not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /health:
+    get:
+      operationId: getHealth
+      summary: Health check
+      tags:
+        - System
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+
+components:
+  schemas:
+    Pet:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique pet identifier
+        name:
+          type: string
+          description: Pet name
+        category:
+          type: string
+          description: Pet category (dog, cat, bird, etc.)
+        status:
+          type: string
+          enum: [available, pending, sold]
+          description: Pet status
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for the pet
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - status
+    
+    PetInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        category:
+          type: string
+        status:
+          type: string
+          enum: [available, pending, sold]
+        tags:
+          type: array
+          items:
+            type: string
+      required:
+        - name
+    
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
+    
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [UP, DOWN]
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+      required:
+        - status
+        - timestamp

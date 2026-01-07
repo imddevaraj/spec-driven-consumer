@@ -1,0 +1,49 @@
+{
+  "name": "spec-kit",
+  "version": "1.0.0",
+  "description": "Spec-driven API client development library - OpenAPI as the single source of truth",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "spec": "./dist/cli/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "lint": "eslint src --ext .ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "openapi",
+    "api",
+    "sdk",
+    "code-generation",
+    "spec-driven",
+    "cli"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20.11.0",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "eslint": "^8.56.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@openapitools/openapi-generator-cli": "^2.13.4",
+    "chalk": "^4.1.2",
+    "commander": "^12.0.0",
+    "handlebars": "^4.7.8",
+    "js-yaml": "^4.1.0",
+    "ora": "^5.4.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
