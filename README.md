@@ -1,4 +1,4 @@
-# Origo Spec-Kit
+#  Spec-Kit
 
 **Spec-Driven API Client Generator**
 
